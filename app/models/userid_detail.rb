@@ -82,7 +82,7 @@ class UseridDetail
   def count_not_checked_messages
      count = 0
      self.userid_messages.each do |msg|
-        count=+ msg.sent_messages.select { |smsg| smsg if smsg.checked == false && smsg.sender == self.userid  }.length
+        count = count + msg.sent_messages.select { |smsg| smsg if smsg.checked == false && smsg.sender == self.userid  }.length
      end
      count
   end
