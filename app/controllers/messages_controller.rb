@@ -9,6 +9,8 @@ class MessagesController < ApplicationController
   def show
     get_user_info_from_userid
     @message = Message.id(params[:id]).first
+    @message_sent = @message.sent_messages.where(message_id: @message.id,sender: @user.userid,checked: false)
+    @message_sent.to_a[0].update_attribute(:checked,true) if @message_sent.to_a.length == 1
     if @message.blank?
       go_back("message",params[:id])
     end
@@ -112,6 +114,11 @@ class MessagesController < ApplicationController
         active = false
         active = true if params[:active] == "true"
         reasons = Array.new
+
+        @message_userid =  UseridDetail.find_by(userid: @message.userid).userid_messages
+        @message_userid << @message
+        UseridDetail.find_by(userid: params[:sender]).update_attribute(:userid_messages, @message_userid)
+
         params[:inactive_reasons].blank?  ? reasons << 'temporary' : reasons =  params[:inactive_reasons]
         @sent_message.update_attributes(:recipients => params[:recipients], :active => active, :inactive_reason => reasons, :sender => sender)
         @message.communicate(params[:recipients],  active, reasons,sender)
@@ -141,4 +148,5 @@ class MessagesController < ApplicationController
   def message_params
     params.require(:message).permit!
   end
+
 end

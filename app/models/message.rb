@@ -10,10 +10,14 @@ class Message
   field :path, type: String
   field :file_name, type: String
   field :images, type: String
+
   attr_accessor :action, :inactive_reasons,:active
   embeds_many :sent_messages
   accepts_nested_attributes_for :sent_messages,allow_destroy: true,
     reject_if: :all_blank
+
+
+  belongs_to :userid_detail
 
   mount_uploader :attachment, AttachmentUploader
   mount_uploader :images, ScreenshotUploader

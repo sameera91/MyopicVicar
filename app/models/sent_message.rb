@@ -6,6 +6,7 @@ class SentMessage
   field :message_id, type: String
   field :sender, type: String
   field :inactive_reason, type: Array
+  field :checked, type: Boolean, default: false
   embedded_in :message
   class << self
     def id(id)

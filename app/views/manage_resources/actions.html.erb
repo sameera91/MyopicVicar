@@ -6,5 +6,6 @@
    <% end %> 
 <% breadcrumb :root %>
 <%= @page %> 
+<p>You have <%= link_to @user.count_not_checked_messages,messages_path %> messages waiting for you!!!!</p>
 
 <%= render "resource_sidebar" %>

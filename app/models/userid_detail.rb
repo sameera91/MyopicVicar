@@ -49,6 +49,9 @@ class UseridDetail
   validate :userid_and_email_address_does_not_exist, on: :create
   validate :email_address_does_not_exist, on: :update
 
+  has_many :userid_messages,class_name: "Message"
+
+
   before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname
   after_create :save_to_refinery
   before_save :capitalize_forename, :captilaize_surname
@@ -74,6 +77,14 @@ class UseridDetail
     def reason(reason)
       where(:disabled_reason_standard => reason)
     end
+  end
+
+  def count_not_checked_messages
+     count = 0
+     self.userid_messages.each do |msg|
+        count=+ msg.sent_messages.select { |smsg| smsg if smsg.checked == false && smsg.sender == self.userid  }.length
+     end
+     count
   end
 
   def self.get_active_userids_for_display(syndicate)
