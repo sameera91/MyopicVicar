@@ -35,6 +35,7 @@ class UseridDetail
   field :transcription_agreement, type: Boolean, default: false
   field :technical_agreement, type: Boolean, default: false
   field :research_agreement, type: Boolean, default: false
+  field :userid_messages,type: Array, default: []
   attr_accessor :action, :message
   index({ email_address: 1 })
   index({ userid: 1, person_role: 1 })
@@ -48,8 +49,6 @@ class UseridDetail
   validates_format_of :email_address,:with => Devise::email_regexp
   validate :userid_and_email_address_does_not_exist, on: :create
   validate :email_address_does_not_exist, on: :update
-
-  has_many :userid_messages,class_name: "Message"
 
 
   before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname
@@ -81,9 +80,19 @@ class UseridDetail
 
   def count_not_checked_messages
      count = 0
-     self.userid_messages.each do |msg|
-        count = count + msg.sent_messages.select { |smsg| smsg if smsg.checked == false && smsg.sender == self.userid  }.length
+     userid_msgs = self.userid_messages
+
+     return count if userid_messages.length == 0
+
+     self.userid_messages.each do |msg_id|
+        msg = Message.id(msg_id.to_s).first
+        if msg.nil?
+          userid_msgs = userid_msgs - [msg_id]
+        else
+          count = count + msg.sent_messages.select { |smsg| smsg if smsg.checked == false && smsg.sender == self.userid  }.length
+        end
      end
+     self.update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != self.userid_messages
      count
   end
 

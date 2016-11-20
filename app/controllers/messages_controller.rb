@@ -116,8 +116,10 @@ class MessagesController < ApplicationController
         reasons = Array.new
 
         @message_userid =  UseridDetail.find_by(userid: sender).userid_messages
-        @message_userid << @message
-        UseridDetail.find_by(userid: sender).update_attribute(:userid_messages, @message_userid)
+        if !@message_userid.include? @message.id
+          @message_userid << @message.id
+          UseridDetail.find_by(userid: sender).update_attribute(:userid_messages, @message_userid)
+        end
 
         params[:inactive_reasons].blank?  ? reasons << 'temporary' : reasons =  params[:inactive_reasons]
         @sent_message.update_attributes(:recipients => params[:recipients], :active => active, :inactive_reason => reasons, :sender => sender)

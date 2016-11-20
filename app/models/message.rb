@@ -17,8 +17,6 @@ class Message
     reject_if: :all_blank
 
 
-  belongs_to :userid_detail
-
   mount_uploader :attachment, AttachmentUploader
   mount_uploader :images, ScreenshotUploader
   before_create :add_identifier
